@@ -1,0 +1,92 @@
+services:
+  testrunner:
+    image: $DEV_IMAGE_TAG
+    build:
+      dockerfile: Dockerfile.dev
+      context: .
+      args:
+        OTP_VERSION: $OTP_VERSION
+        THRIFT_VERSION: $THRIFT_VERSION
+    volumes:
+      - .:$PWD
+    depends_on:
+      party-management:
+        condition: service_healthy
+    working_dir: $PWD
+    command: /sbin/init
+
+  party-management:
+    image: ghcr.io/valitydev/party-management:sha-e456e24
+    command: /opt/party-management/bin/party-management foreground
+    depends_on:
+      machinegun:
+        condition: service_healthy
+      dominant:
+        condition: service_healthy
+      shumway:
+        condition: service_healthy
+    ports:
+      - "8022"
+    healthcheck:
+      test: "/opt/party-management/bin/party-management ping"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  dominant:
+    image: ghcr.io/valitydev/dominant:sha-eb1cccb
+    depends_on:
+      - machinegun
+    ports:
+      - "8022"
+    command: /opt/dominant/bin/dominant foreground
+    healthcheck:
+      test: "/opt/dominant/bin/dominant ping"
+      interval: 5s
+      timeout: 1s
+      retries: 20
+
+  machinegun:
+    image: ghcr.io/valitydev/machinegun:sha-7f0a21a
+    ports:
+      - "8022"
+    command: /opt/machinegun/bin/machinegun foreground
+    volumes:
+      - ./test/machinegun/config.yaml:/opt/machinegun/etc/config.yaml
+      - ./test/machinegun/cookie:/opt/machinegun/etc/cookie
+    healthcheck:
+      test: "/opt/machinegun/bin/machinegun ping"
+      interval: 5s
+      timeout: 1s
+      retries: 20
+
+  shumway:
+    image: docker.io/rbkmoney/shumway:44eb989065b27be619acd16b12ebdb2288b46c36
+    restart: unless-stopped
+    depends_on:
+      - shumway-db
+    ports:
+      - "8022"
+    entrypoint:
+      - java
+      - -Xmx512m
+      - -jar
+      - /opt/shumway/shumway.jar
+      - --spring.datasource.url=jdbc:postgresql://shumway-db:5432/shumway
+      - --spring.datasource.username=postgres
+      - --spring.datasource.password=postgres
+      - --management.metrics.export.statsd.enabled=false
+    healthcheck:
+      test: curl http://localhost:8022/
+      interval: 5s
+      timeout: 1s
+      retries: 20
+
+  shumway-db:
+    image: docker.io/library/postgres:9.6
+    ports:
+      - "5432"
+    environment:
+      - POSTGRES_DB=shumway
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres

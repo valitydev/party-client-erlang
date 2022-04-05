@@ -24,12 +24,16 @@ all() ->
 -spec init_per_suite(config()) -> config().
 init_per_suite(Config) ->
     AppConfig = [
-        {party_client, [{woody, #{options => #{a => b, woody_client => #{c => d}}}}]}
+        {party_client, [
+            {woody, #{
+                options => #{cache => #{local_name => blah}, woody_client => #{protocol_handler_override => my_handler}}
+            }}
+        ]}
     ],
     Apps = lists:flatten([genlib_app:start_application_with(A, C) || {A, C} <- AppConfig]),
     [{apps, Apps} | Config].
 
--spec end_per_suite(config()) -> config().
+-spec end_per_suite(config()) -> ok.
 end_per_suite(C) ->
     genlib_app:stop_unload_applications(proplists:get_value(apps, C)).
 
@@ -37,16 +41,19 @@ end_per_suite(C) ->
 
 -spec config_merge_test(config()) -> any().
 config_merge_test(_C) ->
-    Client = party_client:create_client(#{woody_options => #{a => c, woody_client => #{e => f}}}),
+    Client = party_client:create_client(#{
+        woody_options => #{
+            cache => #{local_name => party_client_default_cache}, woody_client => #{deadline => undefined}
+        }
+    }),
     WoodyOptions = party_client_config:get_woody_options(Client),
     #{
-        a := c,
         cache := #{
             local_name := party_client_default_cache
         },
         woody_client := #{
-            e := f,
-            c := d,
+            protocol_handler_override := my_handler,
+            deadline := undefined,
             event_handler := woody_event_handler_default,
             transport_opts := #{},
             url := _Urls
