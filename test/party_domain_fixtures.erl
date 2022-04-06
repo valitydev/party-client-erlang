@@ -486,8 +486,6 @@ construct_category(Ref, Name, Type) ->
 
 -spec construct_payment_method(dmsl_domain_thrift:'PaymentMethodRef'()) ->
     {payment_method, dmsl_domain_thrift:'PaymentMethodObject'()}.
-construct_payment_method(?pmt(_Type, ?tkz_bank_card(Name, _)) = Ref) when is_atom(Name) ->
-    construct_payment_method(Name, Ref);
 construct_payment_method(?pmt(_Type, Name) = Ref) when is_atom(Name) ->
     construct_payment_method(Name, Ref).
 
@@ -588,12 +586,12 @@ construct_system_account_set(Ref, Name, ?cur(CurrencyCode)) ->
     }}.
 
 -spec construct_external_account_set(external_account_set()) ->
-    {system_account_set, dmsl_domain_thrift:'ExternalAccountSetObject'()}.
+    {external_account_set, dmsl_domain_thrift:'ExternalAccountSetObject'()}.
 construct_external_account_set(Ref) ->
     construct_external_account_set(Ref, <<"Primaries">>, ?cur(<<"RUB">>)).
 
 -spec construct_external_account_set(external_account_set(), name(), currency()) ->
-    {system_account_set, dmsl_domain_thrift:'ExternalAccountSetObject'()}.
+    {external_account_set, dmsl_domain_thrift:'ExternalAccountSetObject'()}.
 construct_external_account_set(Ref, Name, ?cur(CurrencyCode)) ->
     AccountID1 = 1,
     AccountID2 = 2,
@@ -630,7 +628,8 @@ construct_business_schedule(Ref) ->
         }
     }}.
 
--spec construct_routing_ruleset(routing_ruleset_ref(), name(), _) -> dmsl_domain_thrift:'RoutingRulesetObject'().
+-spec construct_routing_ruleset(routing_ruleset_ref(), name(), _) ->
+    {routing_rules, dmsl_domain_thrift:'RoutingRulesObject'()}.
 construct_routing_ruleset(Ref, Name, Decisions) ->
     {routing_rules, #domain_RoutingRulesObject{
         ref = Ref,

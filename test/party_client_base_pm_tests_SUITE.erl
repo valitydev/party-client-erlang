@@ -105,7 +105,7 @@ init_per_suite(Config) ->
     true = erlang:unlink(ClientPid),
     [{apps, Apps}, {client, Client}, {client_pid, ClientPid}, {test_id, genlib:to_binary(Revision)} | Config].
 
--spec end_per_suite(config()) -> config().
+-spec end_per_suite(config()) -> ok.
 end_per_suite(C) ->
     true = erlang:exit(conf(client_pid, C), shutdown),
     genlib_app:stop_unload_applications(proplists:get_value(apps, C)).
@@ -114,7 +114,7 @@ end_per_suite(C) ->
 init_per_group(Group, Config) ->
     [{test_id, genlib:to_binary(Group)} | Config].
 
--spec end_per_group(atom(), config()) -> config().
+-spec end_per_group(atom(), config()) -> ok.
 end_per_group(_Group, _Config) ->
     ok.
 
@@ -122,7 +122,7 @@ end_per_group(_Group, _Config) ->
 init_per_testcase(Name, Config) ->
     [{test_id, genlib:to_binary(Name)} | Config].
 
--spec end_per_testcase(atom(), config()) -> config().
+-spec end_per_testcase(atom(), config()) -> ok.
 end_per_testcase(_Name, _Config) ->
     ok.
 
@@ -552,7 +552,7 @@ test_init_info(C) ->
     Context = create_context(),
     {ok, PartyId, Client, Context}.
 
--spec make_battle_ready_contractor() -> dmsl_payment_processing_thrift:'Contractor'().
+-spec make_battle_ready_contractor() -> dmsl_domain_thrift:'Contractor'().
 make_battle_ready_contractor() ->
     BankAccount = #domain_RussianBankAccount{
         account = <<"4276300010908312893">>,
