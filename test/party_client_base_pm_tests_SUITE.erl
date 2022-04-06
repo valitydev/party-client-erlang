@@ -210,7 +210,8 @@ shop_operations_test(C) ->
     ok = party_client_thrift:activate_shop(PartyId, ShopId, Client, Context),
     ok = party_client_thrift:block_shop(PartyId, ShopId, <<"block_test">>, Client, Context),
     ok = party_client_thrift:unblock_shop(PartyId, ShopId, <<"unblock_test">>, Client, Context),
-    {ok, #domain_ShopAccount{settlement = AccountID}} = party_client_thrift:get_shop_account(PartyId, ShopId, Client, Context),
+    {ok, #domain_ShopAccount{settlement = AccountID}} =
+        party_client_thrift:get_shop_account(PartyId, ShopId, Client, Context),
     {ok, _ShopAccount} = party_client_thrift:get_account_state(PartyId, AccountID, Client, Context).
 
 -spec claim_operations_test(config()) -> any().
