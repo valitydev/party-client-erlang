@@ -16,7 +16,7 @@ services:
     command: /sbin/init
 
   party-management:
-    image: ghcr.io/valitydev/party-management:sha-e456e24
+    image: ghcr.io/valitydev/party-management:sha-76058e0
     command: /opt/party-management/bin/party-management foreground
     depends_on:
       machinegun:

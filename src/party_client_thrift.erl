@@ -49,7 +49,6 @@
 %% Domain types
 
 -type party() :: dmsl_domain_thrift:'Party'().
--type user_info() :: dmsl_payment_processing_thrift:'UserInfo'().
 -type party_id() :: dmsl_domain_thrift:'PartyID'().
 -type party_params() :: dmsl_payment_processing_thrift:'PartyParams'().
 -type party_revision() :: dmsl_domain_thrift:'PartyRevision'().
@@ -94,7 +93,6 @@
 -type revoke_reason() :: binary() | undefined.
 
 -export_type([party/0]).
--export_type([user_info/0]).
 -export_type([party_id/0]).
 -export_type([party_params/0]).
 -export_type([party_revision/0]).
@@ -134,7 +132,6 @@
 
 %% Error types
 
--type invalid_user() :: dmsl_payment_processing_thrift:'InvalidUser'().
 -type party_exists() :: dmsl_payment_processing_thrift:'PartyExists'().
 -type party_not_exists_yet() :: dmsl_payment_processing_thrift:'PartyNotExistsYet'().
 -type party_not_found() :: dmsl_payment_processing_thrift:'PartyNotFound'().
@@ -171,7 +168,7 @@
 
 %% Internal types
 
--type error(Error) :: invalid_user() | party_not_found() | Error.
+-type error(Error) :: party_not_found() | Error.
 
 -type result(Success, Error) :: {ok, Success} | {error, error(Error)}.
 -type void(Error) :: ok | {error, error(Error)}.
@@ -185,7 +182,7 @@
 %% Party API
 
 -spec create(party_id(), party_params(), client(), context()) -> ok | {error, error(Error)} | no_return() when
-    Error :: invalid_user() | party_exists().
+    Error :: party_exists().
 create(PartyId, PartyParams, Client, Context) ->
     call('Create', [PartyId, PartyParams], Client, Context).
 
@@ -415,25 +412,8 @@ get_events(PartyId, Range, Client, Context) ->
 %% Internal functions
 
 call(Function, Args, Client, Context) ->
-    UserInfo = party_client_context:get_user_info(Context),
-    valid = validate_user_info(UserInfo),
-    ArgsWithUserInfo = erlang:list_to_tuple([encode_user_info(UserInfo) | Args]),
+    ArgsWithUserInfo = erlang:list_to_tuple(with_user_info(Args)),
     party_client_woody:call(Function, ArgsWithUserInfo, Client, Context).
 
--spec validate_user_info(party_client_context:user_info() | undefined) -> valid | no_return().
-validate_user_info(undefined = UserInfo) ->
-    error(invalid_user_info, [UserInfo]);
-validate_user_info(_UserInfo) ->
-    valid.
-
--spec encode_user_info(party_client_context:user_info()) -> user_info().
-encode_user_info(#{id := Id, realm := Realm}) ->
-    #payproc_UserInfo{id = Id, type = encode_realm(Realm)}.
-
--spec encode_realm(binary()) -> dmsl_payment_processing_thrift:'UserType'().
-encode_realm(<<"external">>) ->
-    {external_user, #payproc_ExternalUser{}};
-encode_realm(<<"internal">>) ->
-    {internal_user, #payproc_InternalUser{}};
-encode_realm(<<"service">>) ->
-    {service_user, #payproc_ServiceUser{}}.
+with_user_info(Args) ->
+    [undefined | Args].

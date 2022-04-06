@@ -7,8 +7,7 @@
         stdlib,
         genlib,
         damsel,
-        woody,
-        woody_user_identity
+        woody
     ]},
     {env, [
         {services, #{
