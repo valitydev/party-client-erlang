@@ -2,7 +2,6 @@
 
 -export([create/1]).
 -export([get_woody_context/1]).
--export([set_woody_context/2]).
 
 -opaque context() :: #{
     woody_context := woody_context()
@@ -28,10 +27,6 @@ create(Options) ->
 -spec get_woody_context(context()) -> woody_context().
 get_woody_context(#{woody_context := WoodyContext}) ->
     WoodyContext.
-
--spec set_woody_context(woody_context(), context()) -> context().
-set_woody_context(WoodyContext, Context) ->
-    Context#{woody_context => WoodyContext}.
 
 %% Internal functions
 

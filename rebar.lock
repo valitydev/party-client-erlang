@@ -31,8 +31,7 @@
  {<<"woody">>,
   {git,"https://github.com/valitydev/woody_erlang.git",
        {ref,"3ddacb9296691aa8ddad05498d1fd34b078eda75"}},
-  0}
-  ]}.
+  0}]}.
 [
 {pkg_hash,[
  {<<"cache">>, <<"B23A5FE7095445A88412A6E614C933377E0137B44FFED77C9B3FEF1A731A20B2">>},

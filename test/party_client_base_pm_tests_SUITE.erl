@@ -155,6 +155,12 @@ party_operations_test(C) ->
     ok = party_client_thrift:activate(PartyId, Client, Context),
     ok = party_client_thrift:block(PartyId, <<"block_test">>, Client, Context),
     ok = party_client_thrift:unblock(PartyId, <<"unblock_test">>, Client, Context),
+    {ok, #{}} = party_client_thrift:get_meta(PartyId, Client, Context),
+    MetadataNs = <<"metadata">>,
+    Metadata = {str, <<"cool_stuff">>},
+    ok = party_client_thrift:set_metadata(PartyId, MetadataNs, Metadata, Client, Context),
+    {ok, Metadata} = party_client_thrift:get_metadata(PartyId, MetadataNs, Client, Context),
+    ok = party_client_thrift:remove_metadata(PartyId, MetadataNs, Client, Context),
     ok.
 
 -spec contract_create_and_get_test(config()) -> any().
@@ -203,7 +209,9 @@ shop_operations_test(C) ->
     ok = party_client_thrift:suspend_shop(PartyId, ShopId, Client, Context),
     ok = party_client_thrift:activate_shop(PartyId, ShopId, Client, Context),
     ok = party_client_thrift:block_shop(PartyId, ShopId, <<"block_test">>, Client, Context),
-    ok = party_client_thrift:unblock_shop(PartyId, ShopId, <<"unblock_test">>, Client, Context).
+    ok = party_client_thrift:unblock_shop(PartyId, ShopId, <<"unblock_test">>, Client, Context),
+    {ok, #domain_ShopAccount{settlement = AccountID}} = party_client_thrift:get_shop_account(PartyId, ShopId, Client, Context),
+    {ok, _ShopAccount} = party_client_thrift:get_account_state(PartyId, AccountID, Client, Context).
 
 -spec claim_operations_test(config()) -> any().
 claim_operations_test(C) ->
