@@ -4,7 +4,6 @@
 -export([get_party_service/1]).
 -export([get_cache_mode/1]).
 -export([get_aggressive_caching_timeout/1]).
--export([get_woody_transport_opts/1]).
 -export([get_woody_options/1]).
 -export([get_deadline_timeout/1]).
 -export([get_retries/1]).
@@ -39,7 +38,6 @@
 -type config_path() :: atom() | [atom() | [any()]].
 -type woody_service() :: woody:service().
 -type woody_options() :: woody_caching_client:options().
--type woody_transport_opts() :: woody_client_thrift_http_transport:transport_options().
 
 %% API
 
@@ -64,12 +62,6 @@ get_aggressive_caching_timeout(#{aggressive_caching_timeout := Timeout}) ->
     Timeout;
 get_aggressive_caching_timeout(_Client) ->
     get_default([woody, aggressive_caching_time], ?DEFAULT_AGGERSSIVE_CACHING_TIMEOUT).
-
--spec get_woody_transport_opts(client()) -> woody_transport_opts().
-get_woody_transport_opts(#{woody_transport_opts := Opts}) ->
-    Opts;
-get_woody_transport_opts(_Client) ->
-    get_default([woody, transport_opts], #{}).
 
 -spec get_woody_options(client()) -> woody_options().
 get_woody_options(Client) ->

@@ -16,7 +16,6 @@
 -export([end_per_testcase/2]).
 
 -export([create_and_get_test/1]).
--export([user_info_using_test/1]).
 -export([party_errors_test/1]).
 -export([party_operations_test/1]).
 -export([contract_create_and_get_test/1]).
@@ -56,7 +55,6 @@ groups() ->
     [
         {party_management_api, [parallel], [
             create_and_get_test,
-            user_info_using_test,
             party_errors_test,
             party_operations_test,
             contract_create_and_get_test,
@@ -136,21 +134,6 @@ create_and_get_test(C) ->
     {ok, Party} = party_client_thrift:get(PartyId, Client, Context),
     #domain_Party{id = PartyId, contact_info = ContactInfo} = Party.
 
--spec user_info_using_test(config()) -> any().
-user_info_using_test(C) ->
-    {ok, PartyId, Client, _Context} = test_init_info(C),
-    UserInfo = user_info(test, service),
-    ContextWithoutUser = party_client:create_context(),
-    ContextWithUser = party_client:create_context(#{user_info => UserInfo}),
-    WoodyContext = woody_user_identity:put(UserInfo, woody_context:new()),
-    ContextWithWoody = party_client:create_context(#{woody_context => WoodyContext}),
-    ContactInfo = #domain_PartyContactInfo{email = PartyId},
-    ok = party_client_thrift:create(PartyId, make_party_params(ContactInfo), Client, ContextWithUser),
-    {ok, _} = (catch party_client_thrift:get(PartyId, Client, ContextWithUser)),
-    {ok, _} = (catch party_client_thrift:get(PartyId, Client, ContextWithWoody)),
-    {'EXIT', {invalid_user_info, _}} = (catch party_client_thrift:get(PartyId, Client, ContextWithoutUser)),
-    ok.
-
 -spec party_errors_test(config()) -> any().
 party_errors_test(C) ->
     {ok, PartyId, Client, Context} = test_init_info(C),
@@ -162,8 +145,6 @@ party_errors_test(C) ->
     {error, #payproc_InvalidPartyRevision{}} =
         party_client_thrift:checkout(PartyId, {revision, 100500}, Client, Context),
     {error, #payproc_InvalidPartyStatus{}} = party_client_thrift:activate(PartyId, Client, Context),
-    OtherContext = party_client:create_context(#{user_info => user_info(test2, external)}),
-    {error, #payproc_InvalidUser{}} = party_client_thrift:get(PartyId, Client, OtherContext),
     ok.
 
 -spec party_operations_test(config()) -> any().
@@ -174,8 +155,12 @@ party_operations_test(C) ->
     ok = party_client_thrift:activate(PartyId, Client, Context),
     ok = party_client_thrift:block(PartyId, <<"block_test">>, Client, Context),
     ok = party_client_thrift:unblock(PartyId, <<"unblock_test">>, Client, Context),
-    OtherContext = party_client:create_context(#{user_info => user_info(test2, external)}),
-    {error, #payproc_InvalidUser{}} = party_client_thrift:get(PartyId, Client, OtherContext),
+    {ok, #{}} = party_client_thrift:get_meta(PartyId, Client, Context),
+    MetadataNs = <<"metadata">>,
+    Metadata = {str, <<"cool_stuff">>},
+    ok = party_client_thrift:set_metadata(PartyId, MetadataNs, Metadata, Client, Context),
+    {ok, Metadata} = party_client_thrift:get_metadata(PartyId, MetadataNs, Client, Context),
+    ok = party_client_thrift:remove_metadata(PartyId, MetadataNs, Client, Context),
     ok.
 
 -spec contract_create_and_get_test(config()) -> any().
@@ -224,7 +209,10 @@ shop_operations_test(C) ->
     ok = party_client_thrift:suspend_shop(PartyId, ShopId, Client, Context),
     ok = party_client_thrift:activate_shop(PartyId, ShopId, Client, Context),
     ok = party_client_thrift:block_shop(PartyId, ShopId, <<"block_test">>, Client, Context),
-    ok = party_client_thrift:unblock_shop(PartyId, ShopId, <<"unblock_test">>, Client, Context).
+    ok = party_client_thrift:unblock_shop(PartyId, ShopId, <<"unblock_test">>, Client, Context),
+    {ok, #domain_ShopAccount{settlement = AccountID}} =
+        party_client_thrift:get_shop_account(PartyId, ShopId, Client, Context),
+    {ok, _ShopAccount} = party_client_thrift:get_account_state(PartyId, AccountID, Client, Context).
 
 -spec claim_operations_test(config()) -> any().
 claim_operations_test(C) ->
@@ -539,12 +527,8 @@ conf(Key, Config) ->
 make_party_params(ContactInfo) ->
     #payproc_PartyParams{contact_info = ContactInfo}.
 
--spec user_info(any(), any()) -> party_client_context:user_info().
-user_info(User, Realm) ->
-    #{id => genlib:to_binary(User), realm => genlib:to_binary(Realm)}.
-
 create_context() ->
-    party_client:create_context(#{user_info => user_info(test, service)}).
+    party_client:create_context().
 
 test_init_info(C) ->
     PartyId = get_test_id(C),
