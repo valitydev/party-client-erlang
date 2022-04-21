@@ -412,8 +412,4 @@ get_events(PartyId, Range, Client, Context) ->
 %% Internal functions
 
 call(Function, Args, Client, Context) ->
-    ArgsWithUserInfo = erlang:list_to_tuple(with_user_info(Args)),
-    party_client_woody:call(Function, ArgsWithUserInfo, Client, Context).
-
-with_user_info(Args) ->
-    [undefined | Args].
+    party_client_woody:call(Function, erlang:list_to_tuple(Args), Client, Context).
