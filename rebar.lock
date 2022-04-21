@@ -5,7 +5,7 @@
  {<<"cowlib">>,{pkg,<<"cowlib">>,<<"2.11.0">>},2},
  {<<"damsel">>,
   {git,"https://github.com/valitydev/damsel.git",
-       {ref,"3efe7dffaae0f40a77dead166a52f8c9108f2d8d"}},
+       {ref,"3eae2029bbe08440836ef0acf6177815c1f66edd"}},
   0},
  {<<"genlib">>,
   {git,"https://github.com/valitydev/genlib.git",
