@@ -49,7 +49,7 @@ create(Options) ->
 get_party_service(#{party_service := Service}) ->
     Service;
 get_party_service(_Client) ->
-    get_default([woody, party_service], {dmsl_payment_processing_thrift, 'PartyManagement'}).
+    get_default([woody, party_service], {dmsl_payproc_thrift, 'PartyManagement'}).
 
 -spec get_cache_mode(client()) -> cache_mode().
 get_cache_mode(#{cache_mode := CacheMode}) ->

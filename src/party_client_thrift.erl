@@ -1,7 +1,5 @@
 -module(party_client_thrift).
 
--include_lib("damsel/include/dmsl_payment_processing_thrift.hrl").
-
 -export([create/4]).
 -export([get/3]).
 -export([get_revision/3]).
@@ -50,26 +48,26 @@
 
 -type party() :: dmsl_domain_thrift:'Party'().
 -type party_id() :: dmsl_domain_thrift:'PartyID'().
--type party_params() :: dmsl_payment_processing_thrift:'PartyParams'().
+-type party_params() :: dmsl_payproc_thrift:'PartyParams'().
 -type party_revision() :: dmsl_domain_thrift:'PartyRevision'().
 -type contract_id() :: dmsl_domain_thrift:'ContractID'().
 -type contract() :: dmsl_domain_thrift:'Contract'().
 -type shop_id() :: dmsl_domain_thrift:'ShopID'().
 -type shop() :: dmsl_domain_thrift:'Shop'().
--type shop_contract() :: dmsl_payment_processing_thrift:'ShopContract'().
--type claim_id() :: dmsl_payment_processing_thrift:'ClaimID'().
--type claim() :: dmsl_payment_processing_thrift:'Claim'().
--type claim_revision() :: dmsl_payment_processing_thrift:'ClaimRevision'().
--type changeset() :: dmsl_payment_processing_thrift:'PartyChangeset'().
+-type shop_contract() :: dmsl_payproc_thrift:'ShopContract'().
+-type claim_id() :: dmsl_payproc_thrift:'ClaimID'().
+-type claim() :: dmsl_payproc_thrift:'Claim'().
+-type claim_revision() :: dmsl_payproc_thrift:'ClaimRevision'().
+-type changeset() :: dmsl_payproc_thrift:'PartyChangeset'().
 -type account_id() :: dmsl_domain_thrift:'AccountID'().
--type account_state() :: dmsl_payment_processing_thrift:'AccountState'().
+-type account_state() :: dmsl_payproc_thrift:'AccountState'().
 -type shop_account() :: dmsl_domain_thrift:'ShopAccount'().
 -type meta() :: dmsl_domain_thrift:'PartyMeta'().
 -type meta_ns() :: dmsl_domain_thrift:'PartyMetaNamespace'().
 -type meta_data() :: dmsl_domain_thrift:'PartyMetaData'().
 -type timestamp() :: dmsl_base_thrift:'Timestamp'().
--type party_revision_param() :: dmsl_payment_processing_thrift:'PartyRevisionParam'().
--type payout_params() :: dmsl_payment_processing_thrift:'PayoutParams'().
+-type party_revision_param() :: dmsl_payproc_thrift:'PartyRevisionParam'().
+-type payout_params() :: dmsl_payproc_thrift:'PayoutParams'().
 -type provider_ref() :: dmsl_domain_thrift:'ProviderRef'().
 -type provider() :: dmsl_domain_thrift:'Provider'().
 -type terminal_ref() :: dmsl_domain_thrift:'TerminalRef'().
@@ -80,13 +78,13 @@
 -type routing_ruleset() :: dmsl_domain_thrift:'RoutingRuleset'().
 -type payment_institution() :: dmsl_domain_thrift:'PaymentInstitution'().
 -type payment_institution_ref() :: dmsl_domain_thrift:'PaymentInstitutionRef'().
--type varset() :: dmsl_payment_processing_thrift:'Varset'().
--type contract_terms_varset() :: dmsl_payment_processing_thrift:'ComputeContractTermsVarset'().
--type shop_terms_varset() :: dmsl_payment_processing_thrift:'ComputeShopTermsVarset'().
+-type varset() :: dmsl_payproc_thrift:'Varset'().
+-type contract_terms_varset() :: dmsl_payproc_thrift:'ComputeContractTermsVarset'().
+-type shop_terms_varset() :: dmsl_payproc_thrift:'ComputeShopTermsVarset'().
 -type terms() :: dmsl_domain_thrift:'TermSet'().
 -type domain_revision() :: dmsl_domain_thrift:'DataRevision'().
 -type final_cash_flow() :: dmsl_domain_thrift:'FinalCashFlow'().
--type event_range() :: dmsl_payment_processing_thrift:'EventRange'().
+-type event_range() :: dmsl_payproc_thrift:'EventRange'().
 -type block_reason() :: binary().
 -type unblock_reason() :: binary().
 -type deny_reason() :: binary() | undefined.
@@ -132,31 +130,31 @@
 
 %% Error types
 
--type party_exists() :: dmsl_payment_processing_thrift:'PartyExists'().
--type party_not_exists_yet() :: dmsl_payment_processing_thrift:'PartyNotExistsYet'().
--type party_not_found() :: dmsl_payment_processing_thrift:'PartyNotFound'().
--type invalid_party_revision() :: dmsl_payment_processing_thrift:'InvalidPartyRevision'().
--type invalid_party_status() :: dmsl_payment_processing_thrift:'InvalidPartyStatus'().
--type meta_ns_not_found() :: dmsl_payment_processing_thrift:'PartyMetaNamespaceNotFound'().
--type contract_not_found() :: dmsl_payment_processing_thrift:'ContractNotFound'().
--type shop_not_found() :: dmsl_payment_processing_thrift:'ShopNotFound'().
--type invalid_shop_status() :: dmsl_payment_processing_thrift:'InvalidShopStatus'().
--type changeset_conflict() :: dmsl_payment_processing_thrift:'ChangesetConflict'().
--type invalid_changeset() :: dmsl_payment_processing_thrift:'InvalidChangeset'().
--type claim_not_found() :: dmsl_payment_processing_thrift:'ClaimNotFound'().
--type invalid_claim_status() :: dmsl_payment_processing_thrift:'InvalidClaimStatus'().
--type invalid_claim_revision() :: dmsl_payment_processing_thrift:'InvalidClaimRevision'().
--type shop_account_not_found() :: dmsl_payment_processing_thrift:'ShopAccountNotFound'().
--type account_not_found() :: dmsl_payment_processing_thrift:'AccountNotFound'().
--type payment_institution_not_found() :: dmsl_payment_processing_thrift:'PaymentInstitutionNotFound'().
--type not_permitted() :: dmsl_payment_processing_thrift:'OperationNotPermitted'().
--type event_not_found() :: dmsl_payment_processing_thrift:'EventNotFound'().
+-type party_exists() :: dmsl_payproc_thrift:'PartyExists'().
+-type party_not_exists_yet() :: dmsl_payproc_thrift:'PartyNotExistsYet'().
+-type party_not_found() :: dmsl_payproc_thrift:'PartyNotFound'().
+-type invalid_party_revision() :: dmsl_payproc_thrift:'InvalidPartyRevision'().
+-type invalid_party_status() :: dmsl_payproc_thrift:'InvalidPartyStatus'().
+-type meta_ns_not_found() :: dmsl_payproc_thrift:'PartyMetaNamespaceNotFound'().
+-type contract_not_found() :: dmsl_payproc_thrift:'ContractNotFound'().
+-type shop_not_found() :: dmsl_payproc_thrift:'ShopNotFound'().
+-type invalid_shop_status() :: dmsl_payproc_thrift:'InvalidShopStatus'().
+-type changeset_conflict() :: dmsl_payproc_thrift:'ChangesetConflict'().
+-type invalid_changeset() :: dmsl_payproc_thrift:'InvalidChangeset'().
+-type claim_not_found() :: dmsl_payproc_thrift:'ClaimNotFound'().
+-type invalid_claim_status() :: dmsl_payproc_thrift:'InvalidClaimStatus'().
+-type invalid_claim_revision() :: dmsl_payproc_thrift:'InvalidClaimRevision'().
+-type shop_account_not_found() :: dmsl_payproc_thrift:'ShopAccountNotFound'().
+-type account_not_found() :: dmsl_payproc_thrift:'AccountNotFound'().
+-type payment_institution_not_found() :: dmsl_payproc_thrift:'PaymentInstitutionNotFound'().
+-type not_permitted() :: dmsl_payproc_thrift:'OperationNotPermitted'().
+-type event_not_found() :: dmsl_payproc_thrift:'EventNotFound'().
 -type invalid_request() :: dmsl_base_thrift:'InvalidRequest'().
--type provider_not_found() :: dmsl_payment_processing_thrift:'ProviderNotFound'().
--type terminal_not_found() :: dmsl_payment_processing_thrift:'TerminalNotFound'().
--type provision_term_set_undef() :: dmsl_payment_processing_thrift:'ProvisionTermSetUndefined'().
--type globals_not_found() :: dmsl_payment_processing_thrift:'GlobalsNotFound'().
--type ruleset_not_found() :: dmsl_payment_processing_thrift:'RuleSetNotFound'().
+-type provider_not_found() :: dmsl_payproc_thrift:'ProviderNotFound'().
+-type terminal_not_found() :: dmsl_payproc_thrift:'TerminalNotFound'().
+-type provision_term_set_undef() :: dmsl_payproc_thrift:'ProvisionTermSetUndefined'().
+-type globals_not_found() :: dmsl_payproc_thrift:'GlobalsNotFound'().
+-type ruleset_not_found() :: dmsl_payproc_thrift:'RuleSetNotFound'().
 
 %% Client types
 
