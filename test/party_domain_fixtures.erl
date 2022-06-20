@@ -2,7 +2,7 @@
 
 -include("party_domain_fixtures.hrl").
 
--include_lib("damsel/include/dmsl_domain_config_thrift.hrl").
+-include_lib("damsel/include/dmsl_domain_conf_thrift.hrl").
 
 -export([construct_domain_fixture/0]).
 -export([apply_domain_fixture/0]).
@@ -39,7 +39,7 @@ apply_domain_fixture(Fixture) ->
 
 -spec cleanup() -> ok.
 cleanup() ->
-    #'Snapshot'{domain = Domain, version = Head} = dmt_client:checkout(latest),
+    #domain_conf_Snapshot{domain = Domain, version = Head} = dmt_client:checkout(latest),
     Objects = maps:values(Domain),
     _NextRevision = dmt_client:remove(Head, Objects),
     ok.
@@ -251,7 +251,7 @@ construct_domain_fixture() ->
                 parent_terms = undefined,
                 term_sets = [
                     #domain_TimedTermSet{
-                        action_time = #'TimestampInterval'{},
+                        action_time = #base_TimestampInterval{},
                         terms = TestTermSet
                     }
                 ]
@@ -263,7 +263,7 @@ construct_domain_fixture() ->
                 parent_terms = undefined,
                 term_sets = [
                     #domain_TimedTermSet{
-                        action_time = #'TimestampInterval'{},
+                        action_time = #base_TimestampInterval{},
                         terms = DefaultTermSet
                     }
                 ]
@@ -275,7 +275,7 @@ construct_domain_fixture() ->
                 parent_terms = ?trms(2),
                 term_sets = [
                     #domain_TimedTermSet{
-                        action_time = #'TimestampInterval'{},
+                        action_time = #base_TimestampInterval{},
                         terms = TermSet
                     }
                 ]
@@ -287,7 +287,7 @@ construct_domain_fixture() ->
                 parent_terms = ?trms(3),
                 term_sets = [
                     #domain_TimedTermSet{
-                        action_time = #'TimestampInterval'{},
+                        action_time = #base_TimestampInterval{},
                         terms = #domain_TermSet{
                             payments = #domain_PaymentsServiceTerms{
                                 currencies =
@@ -316,7 +316,6 @@ construct_domain_fixture() ->
             data = #domain_Provider{
                 name = <<"Brovider">>,
                 description = <<"A provider but bro">>,
-                terminal = {value, [?prvtrm(1)]},
                 proxy = #domain_Proxy{ref = ?prx(1), additional = #{}},
                 abs_account = <<"1234567890">>,
                 terms = #domain_ProvisionTermSet{
@@ -616,7 +615,7 @@ construct_business_schedule(Ref) ->
         ref = Ref,
         data = #domain_BusinessSchedule{
             name = <<"Every day at 7:40">>,
-            schedule = #'Schedule'{
+            schedule = #base_Schedule{
                 year = ?every,
                 month = ?every,
                 day_of_month = ?every,

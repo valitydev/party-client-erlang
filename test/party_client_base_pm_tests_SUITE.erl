@@ -2,9 +2,7 @@
 
 -include("party_domain_fixtures.hrl").
 
--include_lib("damsel/include/dmsl_domain_config_thrift.hrl").
--include_lib("damsel/include/dmsl_payment_processing_thrift.hrl").
--include_lib("common_test/include/ct.hrl").
+-include_lib("damsel/include/dmsl_payproc_thrift.hrl").
 
 -export([all/0]).
 -export([groups/0]).
@@ -562,7 +560,7 @@ make_battle_ready_contractor() ->
             russian_bank_account = BankAccount
         }}}.
 
--spec make_battle_ready_payout_tool_params() -> dmsl_payment_processing_thrift:'PayoutToolParams'().
+-spec make_battle_ready_payout_tool_params() -> dmsl_payproc_thrift:'PayoutToolParams'().
 make_battle_ready_payout_tool_params() ->
     #payproc_PayoutToolParams{
         currency = #domain_CurrencyRef{symbolic_code = <<"RUB">>},

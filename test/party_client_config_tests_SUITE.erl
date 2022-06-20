@@ -1,7 +1,5 @@
 -module(party_client_config_tests_SUITE).
 
--include_lib("common_test/include/ct.hrl").
-
 -export([all/0]).
 -export([init_per_suite/1]).
 -export([end_per_suite/1]).
