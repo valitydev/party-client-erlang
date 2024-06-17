@@ -127,7 +127,7 @@ end_per_testcase(_Name, _Config) ->
 -spec create_and_get_test(config()) -> any().
 create_and_get_test(C) ->
     {ok, PartyId, Client, Context} = test_init_info(C),
-    ContactInfo = #domain_PartyContactInfo{email = PartyId},
+    ContactInfo = #domain_PartyContactInfo{registration_email = PartyId},
     ok = party_client_thrift:create(PartyId, make_party_params(ContactInfo), Client, Context),
     {ok, Party} = party_client_thrift:get(PartyId, Client, Context),
     #domain_Party{id = PartyId, contact_info = ContactInfo} = Party.
@@ -135,7 +135,7 @@ create_and_get_test(C) ->
 -spec party_errors_test(config()) -> any().
 party_errors_test(C) ->
     {ok, PartyId, Client, Context} = test_init_info(C),
-    ContactInfo = #domain_PartyContactInfo{email = PartyId},
+    ContactInfo = #domain_PartyContactInfo{registration_email = PartyId},
     PartyParams = make_party_params(ContactInfo),
     ok = party_client_thrift:create(PartyId, PartyParams, Client, Context),
     {error, #payproc_PartyExists{}} = party_client_thrift:create(PartyId, PartyParams, Client, Context),
@@ -252,7 +252,7 @@ claim_operations_test(C) ->
 -spec get_revision_test(config()) -> any().
 get_revision_test(C) ->
     {ok, PartyId, Client, Context} = test_init_info(C),
-    ContactInfo = #domain_PartyContactInfo{email = PartyId},
+    ContactInfo = #domain_PartyContactInfo{registration_email = PartyId},
     ok = party_client_thrift:create(PartyId, make_party_params(ContactInfo), Client, Context),
     {ok, Party} = party_client_thrift:get(PartyId, Client, Context),
     {ok, R1} = party_client_thrift:get_revision(PartyId, Client, Context),
@@ -317,7 +317,7 @@ compute_provider_terminal_terms_ok(C) ->
         currency = ?cur(<<"RUB">>)
     },
     CashFlow = make_test_cashflow(),
-    PaymentMethods = ?ordset([?pmt(bank_card_deprecated, visa)]),
+    PaymentMethods = ?ordset([?pmt_bank_card(visa)]),
     {ok, #domain_ProvisionTermSet{
         payments = #domain_PaymentsProvisionTerms{
             cash_flow = {value, [CashFlow]},
@@ -451,7 +451,7 @@ init_domain() ->
 create_party(C) ->
     {ok, TestId, Client, Context} = test_init_info(C),
     PartyId = <<TestId/binary, ".party">>,
-    ContactInfo = #domain_PartyContactInfo{email = <<TestId/binary, "@example.com">>},
+    ContactInfo = #domain_PartyContactInfo{registration_email = <<TestId/binary, "@example.com">>},
     ok = party_client_thrift:create(PartyId, make_party_params(ContactInfo), Client, Context),
     {ok, PartyId}.
 
