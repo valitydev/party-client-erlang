@@ -69,7 +69,7 @@ construct_domain_fixture() ->
             payment_methods =
                 {value,
                     ordsets:from_list([
-                        ?pmt(bank_card_deprecated, visa)
+                        ?pmt_bank_card(visa)
                     ])}
         }
     },
@@ -167,10 +167,10 @@ construct_domain_fixture() ->
         construct_category(?cat(2), <<"Generic Store">>, live),
         construct_category(?cat(3), <<"Guns & Booze">>, live),
 
-        construct_payment_method(?pmt(bank_card_deprecated, visa)),
-        construct_payment_method(?pmt(bank_card_deprecated, mastercard)),
-        construct_payment_method(?pmt(bank_card_deprecated, maestro)),
-        construct_payment_method(?pmt(payment_terminal_deprecated, euroset)),
+        construct_payment_method(visa, ?pmt_bank_card(visa)),
+        construct_payment_method(mastercard, ?pmt_bank_card(mastercard)),
+        construct_payment_method(maestro, ?pmt_bank_card(maestro)),
+        construct_payment_method(euroset, ?pmt(payment_terminal, #domain_PaymentServiceRef{id = <<"euroset">>})),
 
         construct_payout_method(?pomt(russian_bank_account)),
         construct_payout_method(?pomt(international_bank_account)),
@@ -303,7 +303,7 @@ construct_domain_fixture() ->
                                 payment_methods =
                                     {value,
                                         ordsets:from_list([
-                                            ?pmt(bank_card_deprecated, visa)
+                                            ?pmt_bank_card(visa)
                                         ])}
                             }
                         }
@@ -325,8 +325,8 @@ construct_domain_fixture() ->
                         payment_methods =
                             {value,
                                 ?ordset([
-                                    ?pmt(bank_card_deprecated, visa),
-                                    ?pmt(bank_card_deprecated, mastercard)
+                                    ?pmt_bank_card(visa),
+                                    ?pmt_bank_card(mastercard)
                                 ])},
                         cash_limit =
                             {value,
@@ -385,8 +385,8 @@ construct_domain_fixture() ->
                         payment_methods =
                             {value,
                                 ?ordset([
-                                    ?pmt(bank_card_deprecated, visa),
-                                    ?pmt(bank_card_deprecated, mastercard)
+                                    ?pmt_bank_card(visa),
+                                    ?pmt_bank_card(mastercard)
                                 ])},
                         cash_value =
                             {decisions, [
@@ -414,7 +414,7 @@ construct_domain_fixture() ->
                         payment_methods =
                             {value,
                                 ?ordset([
-                                    ?pmt(bank_card_deprecated, visa)
+                                    ?pmt_bank_card(visa)
                                 ])}
                     }
                 }
@@ -430,7 +430,7 @@ construct_domain_fixture() ->
                         payment_methods =
                             {value,
                                 ?ordset([
-                                    ?pmt(bank_card_deprecated, visa)
+                                    ?pmt_bank_card(visa)
                                 ])}
                     }
                 }
@@ -446,7 +446,7 @@ construct_domain_fixture() ->
                         payment_methods =
                             {value,
                                 ?ordset([
-                                    ?pmt(bank_card_deprecated, visa)
+                                    ?pmt_bank_card(visa)
                                 ])}
                     }
                 }
@@ -483,12 +483,9 @@ construct_category(Ref, Name, Type) ->
         }
     }}.
 
--spec construct_payment_method(dmsl_domain_thrift:'PaymentMethodRef'()) ->
+-spec construct_payment_method(atom(), dmsl_domain_thrift:'PaymentMethodRef'()) ->
     {payment_method, dmsl_domain_thrift:'PaymentMethodObject'()}.
-construct_payment_method(?pmt(_Type, Name) = Ref) when is_atom(Name) ->
-    construct_payment_method(Name, Ref).
-
-construct_payment_method(Name, Ref) ->
+construct_payment_method(Name, ?pmt(_, _) = Ref) when is_atom(Name) ->
     Def = erlang:atom_to_binary(Name, unicode),
     {payment_method, #domain_PaymentMethodObject{
         ref = Ref,
