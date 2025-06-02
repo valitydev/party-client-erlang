@@ -16,7 +16,7 @@ services:
     command: /sbin/init
 
   party-management:
-    image: ghcr.io/valitydev/party-management:sha-a737b05-epic-dmt-client-v2
+    image: ghcr.io/valitydev/party-management:sha-e34b394-epic-dmt-client-v2
     command: /opt/party-management/bin/party-management foreground
     depends_on:
       db:

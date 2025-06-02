@@ -165,9 +165,6 @@ construct_domain_fixture() ->
         construct_payment_method(maestro, ?pmt_bank_card(maestro)),
         construct_payment_method(euroset, ?pmt(payment_terminal, #domain_PaymentServiceRef{id = <<"euroset">>})),
 
-        construct_payout_method(?pomt(russian_bank_account)),
-        construct_payout_method(?pomt(international_bank_account)),
-
         construct_proxy(?prx(1), <<"Dummy proxy">>),
         construct_inspector(?insp(1), <<"Dummy Inspector">>, ?prx(1)),
         construct_system_account_set(?sas(1)),
@@ -483,18 +480,6 @@ construct_payment_method(Name, ?pmt(_, _) = Ref) when is_atom(Name) ->
     {payment_method, #domain_PaymentMethodObject{
         ref = Ref,
         data = #domain_PaymentMethodDefinition{
-            name = Def,
-            description = Def
-        }
-    }}.
-
--spec construct_payout_method(dmsl_domain_thrift:'PayoutMethodRef'()) ->
-    {payout_method, dmsl_domain_thrift:'PayoutMethodObject'()}.
-construct_payout_method(?pomt(M) = Ref) ->
-    Def = erlang:atom_to_binary(M, unicode),
-    {payout_method, #domain_PayoutMethodObject{
-        ref = Ref,
-        data = #domain_PayoutMethodDefinition{
             name = Def,
             description = Def
         }
