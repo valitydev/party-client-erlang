@@ -493,8 +493,7 @@ create_shop(PartyId, ContractId, C) ->
         category = #domain_CategoryRef{id = 2},
         location = {url, <<"https://somename.somedomain/p/123?redirect=1">>},
         details = Details,
-        contract_id = ContractId,
-        payout_tool_id = get_first_payout_tool_id(PartyId, ContractId, Client, Context)
+        contract_id = ContractId
     },
     ShopAccountParams = #payproc_ShopAccountParams{currency = Currency},
     Changeset = [
@@ -585,17 +584,3 @@ make_test_cashflow() ->
                     ?share(5, 100, operation_amount, round_half_towards_zero)
                 ])}}
     ).
-
-%% Other helpers
-
--spec get_first_payout_tool_id(binary(), binary(), party_client:client(), party_client:context()) ->
-    dmsl_domain_thrift:'PayoutToolID'().
-get_first_payout_tool_id(PartyId, ContractId, Client, Context) ->
-    {ok, Contract} = party_client_thrift:get_contract(PartyId, ContractId, Client, Context),
-    #domain_Contract{payout_tools = PayoutTools} = Contract,
-    case PayoutTools of
-        [Tool | _] ->
-            Tool#domain_PayoutTool.id;
-        [] ->
-            error(no_payout_tools)
-    end.
