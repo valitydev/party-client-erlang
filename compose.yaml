@@ -84,7 +84,7 @@ services:
     image: postgres:15-bookworm
     command: -c 'max_connections=1000'
     environment:
-      POSTGRES_MULTIPLE_DATABASES: "hellgate,dmt,party_management,shumway,liminator"
+      POSTGRES_MULTIPLE_DATABASES: "dmt,party_management,shumway"
       POSTGRES_PASSWORD: "postgres"
     volumes:
       - ./test/postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
