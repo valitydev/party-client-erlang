@@ -16,7 +16,7 @@ services:
     command: /sbin/init
 
   party-management:
-    image: ghcr.io/valitydev/party-management:sha-e34b394-epic-dmt-client-v2
+    image: ghcr.io/valitydev/party-management:sha-6b6d4a5
     command: /opt/party-management/bin/party-management foreground
     depends_on:
       db:
@@ -34,7 +34,7 @@ services:
       - ./test/party-management/sys.config:/opt/party-management/releases/0.1/sys.config
 
   dmt:
-    image: ghcr.io/valitydev/dominant-v2:sha-fede605-epic-domain-party-support
+    image: ghcr.io/valitydev/dominant-v2:sha-109d2ea
     command: /opt/dmt/bin/dmt foreground
     healthcheck:
       test: "/opt/dmt/bin/dmt ping"
