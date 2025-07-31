@@ -208,28 +208,28 @@ construct_domain_fixture() ->
             ref = ?trms(1),
             data = #domain_TermSetHierarchy{
                 parent_terms = undefined,
-                term_sets = [TestTermSet]
+                term_set = TestTermSet
             }
         }},
         {term_set_hierarchy, #domain_TermSetHierarchyObject{
             ref = ?trms(2),
             data = #domain_TermSetHierarchy{
                 parent_terms = undefined,
-                term_sets = [DefaultTermSet]
+                term_set = DefaultTermSet
             }
         }},
         {term_set_hierarchy, #domain_TermSetHierarchyObject{
             ref = ?trms(3),
             data = #domain_TermSetHierarchy{
                 parent_terms = ?trms(2),
-                term_sets = [TermSet]
+                term_set = TermSet
             }
         }},
         {term_set_hierarchy, #domain_TermSetHierarchyObject{
             ref = ?trms(4),
             data = #domain_TermSetHierarchy{
                 parent_terms = ?trms(3),
-                term_sets = [
+                term_set =
                     #domain_TermSet{
                         payments = #domain_PaymentsServiceTerms{
                             currencies =
@@ -249,7 +249,6 @@ construct_domain_fixture() ->
                                     ])}
                         }
                     }
-                ]
             }
         }},
         {provider, #domain_ProviderObject{
