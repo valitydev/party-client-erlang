@@ -16,9 +16,6 @@
 -type currency() :: dmsl_domain_thrift:'CurrencyRef'().
 -type proxy() :: dmsl_domain_thrift:'ProxyRef'().
 -type inspector() :: dmsl_domain_thrift:'InspectorRef'().
--type template() :: dmsl_domain_thrift:'ContractTemplateRef'().
--type terms() :: dmsl_domain_thrift:'TermSetHierarchyRef'().
--type lifetime() :: dmsl_domain_thrift:'Lifetime'() | undefined.
 -type routing_ruleset_ref() :: dmsl_domain_thrift:'RoutingRulesetRef'().
 
 -type system_account_set() :: dmsl_domain_thrift:'SystemAccountSetRef'().
@@ -183,8 +180,6 @@ construct_domain_fixture() ->
             data = #domain_PaymentInstitution{
                 name = <<"Test Inc.">>,
                 system_account_set = {value, ?sas(1)},
-                default_contract_template = {value, ?tmpl(1)},
-                providers = {value, ?ordset([])},
                 inspector = {value, ?insp(1)},
                 residences = [],
                 realm = test
@@ -196,8 +191,6 @@ construct_domain_fixture() ->
             data = #domain_PaymentInstitution{
                 name = <<"Chetky Payments Inc.">>,
                 system_account_set = {value, ?sas(2)},
-                default_contract_template = {value, ?tmpl(2)},
-                providers = {value, ?ordset([])},
                 inspector = {value, ?insp(1)},
                 residences = [],
                 realm = live
@@ -211,64 +204,25 @@ construct_domain_fixture() ->
                 payment_institutions = ?ordset([?pinst(1), ?pinst(2)])
             }
         }},
-        construct_contract_template(
-            ?tmpl(1),
-            ?trms(1)
-        ),
-        construct_contract_template(
-            ?tmpl(2),
-            ?trms(3)
-        ),
-        construct_contract_template(
-            ?tmpl(3),
-            ?trms(2),
-            {interval, #domain_LifetimeInterval{years = -1}},
-            {interval, #domain_LifetimeInterval{days = -1}}
-        ),
-        construct_contract_template(
-            ?tmpl(4),
-            ?trms(1),
-            undefined,
-            {interval, #domain_LifetimeInterval{months = 1}}
-        ),
-        construct_contract_template(
-            ?tmpl(5),
-            ?trms(4)
-        ),
         {term_set_hierarchy, #domain_TermSetHierarchyObject{
             ref = ?trms(1),
             data = #domain_TermSetHierarchy{
                 parent_terms = undefined,
-                term_sets = [
-                    #domain_TimedTermSet{
-                        action_time = #base_TimestampInterval{},
-                        terms = TestTermSet
-                    }
-                ]
+                term_sets = [TestTermSet]
             }
         }},
         {term_set_hierarchy, #domain_TermSetHierarchyObject{
             ref = ?trms(2),
             data = #domain_TermSetHierarchy{
                 parent_terms = undefined,
-                term_sets = [
-                    #domain_TimedTermSet{
-                        action_time = #base_TimestampInterval{},
-                        terms = DefaultTermSet
-                    }
-                ]
+                term_sets = [DefaultTermSet]
             }
         }},
         {term_set_hierarchy, #domain_TermSetHierarchyObject{
             ref = ?trms(3),
             data = #domain_TermSetHierarchy{
                 parent_terms = ?trms(2),
-                term_sets = [
-                    #domain_TimedTermSet{
-                        action_time = #base_TimestampInterval{},
-                        terms = TermSet
-                    }
-                ]
+                term_sets = [TermSet]
             }
         }},
         {term_set_hierarchy, #domain_TermSetHierarchyObject{
@@ -276,26 +230,23 @@ construct_domain_fixture() ->
             data = #domain_TermSetHierarchy{
                 parent_terms = ?trms(3),
                 term_sets = [
-                    #domain_TimedTermSet{
-                        action_time = #base_TimestampInterval{},
-                        terms = #domain_TermSet{
-                            payments = #domain_PaymentsServiceTerms{
-                                currencies =
-                                    {value,
-                                        ordsets:from_list([
-                                            ?cur(<<"RUB">>)
-                                        ])},
-                                categories =
-                                    {value,
-                                        ordsets:from_list([
-                                            ?cat(2)
-                                        ])},
-                                payment_methods =
-                                    {value,
-                                        ordsets:from_list([
-                                            ?pmt_bank_card(visa)
-                                        ])}
-                            }
+                    #domain_TermSet{
+                        payments = #domain_PaymentsServiceTerms{
+                            currencies =
+                                {value,
+                                    ordsets:from_list([
+                                        ?cur(<<"RUB">>)
+                                    ])},
+                            categories =
+                                {value,
+                                    ordsets:from_list([
+                                        ?cat(2)
+                                    ])},
+                            payment_methods =
+                                {value,
+                                    ordsets:from_list([
+                                        ?pmt_bank_card(visa)
+                                    ])}
                         }
                     }
                 ]
@@ -517,23 +468,6 @@ construct_inspector(Ref, Name, ProxyRef, Additional) ->
                 ref = ProxyRef,
                 additional = Additional
             }
-        }
-    }}.
-
--spec construct_contract_template(template(), terms()) ->
-    {contract_template, dmsl_domain_thrift:'ContractTemplateObject'()}.
-construct_contract_template(Ref, TermsRef) ->
-    construct_contract_template(Ref, TermsRef, undefined, undefined).
-
--spec construct_contract_template(template(), terms(), ValidSince :: lifetime(), ValidUntil :: lifetime()) ->
-    {contract_template, dmsl_domain_thrift:'ContractTemplateObject'()}.
-construct_contract_template(Ref, TermsRef, ValidSince, ValidUntil) ->
-    {contract_template, #domain_ContractTemplateObject{
-        ref = Ref,
-        data = #domain_ContractTemplate{
-            valid_since = ValidSince,
-            valid_until = ValidUntil,
-            terms = TermsRef
         }
     }}.
 
