@@ -1,5 +1,6 @@
 -module(party_client_base_pm_tests_SUITE).
 
+-include_lib("stdlib/include/assert.hrl").
 -include("party_domain_fixtures.hrl").
 
 -include_lib("damsel/include/dmsl_payproc_thrift.hrl").
@@ -21,6 +22,8 @@
 -export([compute_routing_ruleset_ok/1]).
 -export([compute_routing_ruleset_unreducable/1]).
 -export([compute_routing_ruleset_not_found/1]).
+-export([compute_terms_ok/1]).
+-export([compute_terms_hierarchy_not_found/1]).
 
 %% Internal types
 
@@ -53,7 +56,9 @@ groups() ->
             compute_globals_ok,
             compute_routing_ruleset_ok,
             compute_routing_ruleset_unreducable,
-            compute_routing_ruleset_not_found
+            compute_routing_ruleset_not_found,
+            compute_terms_ok,
+            compute_terms_hierarchy_not_found
         ]}
     ].
 
@@ -267,6 +272,34 @@ compute_routing_ruleset_not_found(C) ->
             Client,
             Context
         )).
+
+-spec compute_terms_hierarchy_not_found(config()) -> any().
+compute_terms_hierarchy_not_found(C) ->
+    {ok, _PartyId, Client, Context} = test_init_info(C),
+    {ok, DomainRevision} = ensure_latest_version_checked_out(),
+    ?assertMatch(
+        {error, #payproc_TermSetHierarchyNotFound{}},
+        party_client_thrift:compute_terms(?trms(42), DomainRevision, #payproc_Varset{}, Client, Context)
+    ).
+
+-spec compute_terms_ok(config()) -> any().
+compute_terms_ok(C) ->
+    {ok, _PartyId, Client, Context} = test_init_info(C),
+    {ok, DomainRevision} = ensure_latest_version_checked_out(),
+    Varset = #payproc_Varset{
+        currency = ?cur(<<"RUB">>)
+    },
+    ?assertMatch(
+        {ok, #domain_TermSet{
+            payments = #domain_PaymentsServiceTerms{
+                currencies = {value, _},
+                categories = {value, _},
+                payment_methods = {value, _},
+                cash_limit = {value, _}
+            }
+        }},
+        party_client_thrift:compute_terms(?trms(3), DomainRevision, Varset, Client, Context)
+    ).
 
 %% Internal functions
 

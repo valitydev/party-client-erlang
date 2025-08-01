@@ -5,6 +5,7 @@
 -export([compute_globals/4]).
 -export([compute_routing_ruleset/5]).
 -export([compute_payment_institution/5]).
+-export([compute_terms/5]).
 
 -export([get_account_state/5]).
 -export([get_shop_account/5]).
@@ -30,6 +31,8 @@
 -type routing_ruleset() :: dmsl_domain_thrift:'RoutingRuleset'().
 -type payment_institution() :: dmsl_domain_thrift:'PaymentInstitution'().
 -type payment_institution_ref() :: dmsl_domain_thrift:'PaymentInstitutionRef'().
+-type term_set() :: dmsl_domain_thrift:'TermSet'().
+-type termset_hierarchy_ref() :: dmsl_domain_thrift:'TermSetHierarchyRef'().
 -type varset() :: dmsl_payproc_thrift:'Varset'().
 -type terms() :: dmsl_domain_thrift:'TermSet'().
 -type domain_revision() :: dmsl_domain_thrift:'DataRevision'().
@@ -63,6 +66,7 @@
 -type wallet_account_not_found() :: dmsl_payproc_thrift:'WalletAccountNotFound'().
 -type account_not_found() :: dmsl_payproc_thrift:'AccountNotFound'().
 -type payment_institution_not_found() :: dmsl_payproc_thrift:'PaymentInstitutionNotFound'().
+-type termset_hierarchy_not_found() :: dmsl_payproc_thrift:'TermSetHierarchyNotFound'().
 -type provider_not_found() :: dmsl_payproc_thrift:'ProviderNotFound'().
 -type terminal_not_found() :: dmsl_payproc_thrift:'TerminalNotFound'().
 -type provision_term_set_undef() :: dmsl_payproc_thrift:'ProvisionTermSetUndefined'().
@@ -128,6 +132,16 @@ when
     Error :: payment_institution_not_found().
 compute_payment_institution(Ref, DomainRevision, Varset, Client, Context) ->
     call('ComputePaymentInstitution', [Ref, DomainRevision, Varset], Client, Context).
+
+-spec compute_terms(Ref, DomainRevision, Varset, client(), context()) ->
+    result(term_set(), Error)
+when
+    Ref :: termset_hierarchy_ref(),
+    DomainRevision :: domain_revision(),
+    Varset :: varset(),
+    Error :: termset_hierarchy_not_found().
+compute_terms(Ref, DomainRevision, Varset, Client, Context) ->
+    call('ComputeTerms', [Ref, DomainRevision, Varset], Client, Context).
 
 -spec get_account_state(party_id(), account_id(), domain_revision(), client(), context()) ->
     result(account_state(), Error)
